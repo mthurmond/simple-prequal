@@ -1,0 +1,13 @@
+extends layout
+
+block content
+	main.mb-5
+		.mx-auto.my-4(style='max-width: 45rem;')
+			.my-3.mx-3
+				h2.fw-bold.lh-1.position-relative.text-center= error.message
+				h6.text-muted.fs-6.fw-normal.text-center Error code: #{error.status} 	
+			.text-center.mt-5
+					a.btn.btn-primary.mx-2(href=`/`) Go home
+			.mt-5
+				if environment != 'production'
+					pre= error.stack

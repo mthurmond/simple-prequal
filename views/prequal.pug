@@ -1,0 +1,70 @@
+extends layout
+
+block content
+    .container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
+        form(action="/new", method="post")
+            
+
+            .h2 Loan details
+            label.form-label(for='price') Purchase price
+            .input-group.mb-3
+                span.input-group-text $
+                input#price.form-control(type='text' name='price')
+
+            label.form-label(for='title') Down payment
+            .input-group.mb-3
+                span.input-group-text $
+                input#downpayment.form-control(type='text' name='downpayment')
+
+            label.form-label(for='title') Loan amount
+            p $200,000
+            .mb-5
+            
+
+            .h2 Debt and income
+            label.form-label(for='title') Monthly income
+            .input-group.mb-3
+                span.input-group-text $
+                input#monthly-income.form-control(type='text' name='monthly-income')
+
+            label.form-label.mb-2(for='title') Monthly new home payment
+            p $2,280
+
+            label.form-label(for='title') Other monthly debt payments
+            .input-group.mb-3
+                span.input-group-text $
+                input#monthly-income.form-control(type='text' name='monthly-income')
+
+            label.form-label.mb-3(for='title') Total monthly debt payments
+            p $2,780
+
+            label.form-label.mb-3(for='title') Your DTI
+            p 10%
+
+            label.form-label.mb-3(for='title') Min DTI
+            p 43%
+
+            .h2 Assets
+            label.form-label(for='title') Total assets
+            .input-group.mb-3
+                span.input-group-text $
+                input#monthly-income.form-control(type='text' name='monthly-income')
+            
+            label.form-label.mb-3(for='title') Required assets
+            p $271,000
+
+            .h2 Credit score
+            label.form-label(for='title') Your credit score
+            input#title.form-control(type='title' name='title')
+            
+            label.form-label.mb-3(for='title') Minimum credit score
+            p $271,000
+
+            .h2 Pre-qualification
+            label.form-label.mb-3(for='title') Your prequalification status
+            p Pre-qualified
+
+            // action buttons
+            .mb-5
+            input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
+            button.btn.btn-primary.mx-3(type='submit') Submit
