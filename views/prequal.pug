@@ -1,70 +1,79 @@
 extends layout
 
 block content
-    .container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
-        form(action="/new", method="post")
-            
+	.container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
+		form(action="/new", method="post")
 
-            .h2 Loan details
-            label.form-label(for='price') Purchase price
-            .input-group.mb-3
-                span.input-group-text $
-                input#price.form-control(type='text' name='price')
+			.h2 Loan details
+			.row
+				.col-6 
+					label.form-label(for='price') Purchase price
+					.input-group
+						span.input-group-text $
+						input#purchase-price.form-control.imask-number(type='text' name='purchase-price' min='100000' max='4000000' placeholder='Purchase price' required)
+						.invalid-feedback Must be between $100,000 and $4,000,000.
+				.col-4.gx-0
+					label.form-label(for='down-payment') Down payment
+					.input-group
+						span.input-group-text $
+						input#down-payment.form-control.imask-down-payment(type='text' name='down-payment' placeholder='Down payment' required)
+						.invalid-feedback Must be at least 3% of your purchase price, and allow for a loan of $50,000 or more.
 
-            label.form-label(for='title') Down payment
-            .input-group.mb-3
-                span.input-group-text $
-                input#downpayment.form-control(type='text' name='downpayment')
+				.col-2.gx-0
+					label.form-label.invisible(for='down-payment-percent') %
+					.input-group
+						input#down-payment-percent.form-control(type='text' name='down-payment-percent' required)
+						span.input-group-text %
 
-            label.form-label(for='title') Loan amount
-            p $200,000
-            .mb-5
-            
+			label.form-label(for='title') Loan amount
+			p#loan-amount 
+			.mb-5
 
-            .h2 Debt and income
-            label.form-label(for='title') Monthly income
-            .input-group.mb-3
-                span.input-group-text $
-                input#monthly-income.form-control(type='text' name='monthly-income')
 
-            label.form-label.mb-2(for='title') Monthly new home payment
-            p $2,280
+			.h2 Debt and income
+			label.form-label(for='title') Monthly income
+			.input-group.mb-3
+				span.input-group-text $
+				input#monthly-income.form-control.cleave-number(type='number' name='monthly-income')
 
-            label.form-label(for='title') Other monthly debt payments
-            .input-group.mb-3
-                span.input-group-text $
-                input#monthly-income.form-control(type='text' name='monthly-income')
+			label.form-label.mb-2(for='title') Monthly new home payment
+			p $2,280
 
-            label.form-label.mb-3(for='title') Total monthly debt payments
-            p $2,780
+			label.form-label(for='title') Other monthly debt payments
+			.input-group.mb-3
+				span.input-group-text $
+				input#monthly-income.form-control.cleave-number(type='number' name='monthly-income')
 
-            label.form-label.mb-3(for='title') Your DTI
-            p 10%
+			label.form-label.mb-3(for='title') Total monthly debt payments
+			p $2,780
 
-            label.form-label.mb-3(for='title') Min DTI
-            p 43%
+			label.form-label.mb-3(for='title') Your DTI
+			p 10%
 
-            .h2 Assets
-            label.form-label(for='title') Total assets
-            .input-group.mb-3
-                span.input-group-text $
-                input#monthly-income.form-control(type='text' name='monthly-income')
-            
-            label.form-label.mb-3(for='title') Required assets
-            p $271,000
+			label.form-label.mb-3(for='title') Min DTI
+			p 43%
 
-            .h2 Credit score
-            label.form-label(for='title') Your credit score
-            input#title.form-control(type='title' name='title')
-            
-            label.form-label.mb-3(for='title') Minimum credit score
-            p $271,000
+			.h2 Assets
+			label.form-label(for='title') Total assets
+			.input-group.mb-3
+				span.input-group-text $
+				input#monthly-income.form-control.cleave-number(type='number' name='monthly-income')
+			
+			label.form-label.mb-3(for='title') Required assets
+			p $271,000
 
-            .h2 Pre-qualification
-            label.form-label.mb-3(for='title') Your prequalification status
-            p Pre-qualified
+			.h2 Credit score
+			label.form-label(for='title') Your credit score
+			input#title.form-control(type='title' name='title')
+			
+			label.form-label.mb-3(for='title') Minimum credit score
+			p $271,000
 
-            // action buttons
-            .mb-5
-            input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
-            button.btn.btn-primary.mx-3(type='submit') Submit
+			.h2 Pre-qualification
+			label.form-label.mb-3(for='title') Your prequalification status
+			p Pre-qualified
+
+			// action buttons
+			.mb-5
+			input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
+			button.btn.btn-primary.mx-3(type='submit') Submit
