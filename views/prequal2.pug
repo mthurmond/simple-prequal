@@ -1,8 +1,8 @@
-extends layout
+extends layout2
 
 block content
 	.container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
-		form(action="/new", method="post")
+		form#prequal(action="/new", method="post")
 
 			.h2 Loan details
 			.row
@@ -20,9 +20,9 @@ block content
 						.invalid-feedback Must be at least 3% of your purchase price, and allow for a loan of $50,000 or more.
 
 				.col-2.gx-0
-					label.form-label.invisible(for='down-payment-percent') %
+					label.form-label.invisible(for='dp-percent') %
 					.input-group
-						input#down-payment-percent.form-control(type='text' name='down-payment-percent' required)
+						input#dp-percent.form-control(type='text' name='dp-percent' required)
 						span.input-group-text %
 
 			label.form-label(for='loan-amount') Loan amount
@@ -37,8 +37,8 @@ block content
 				input#monthly-income.form-control.imask-number(type='text' name='monthly-income' min='0' placeholder='Monthly income' required)
 				.invalid-feedback Test, delete later
 
-			label.form-label.mb-2(for='monthly-payment') Monthly new home payment
-			p#monthly-payment
+			label.form-label.mb-2(for='monthly-loan-payment') Monthly new home payment
+			p#monthly-loan-payment
 
 			label.form-label(for='other-monthly-debt') Other monthly debt payments
 			.input-group.mb-3
