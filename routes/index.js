@@ -149,6 +149,11 @@ router.get('/prequal', (req, res) => {
     res.render('prequal', { title: "New prequal" }); 
 }); 
 
+// GET /prequal2
+router.get('/prequal2', (req, res) => {
+    res.render('prequal2', { title: "New prequal" }); 
+}); 
+
 // GET /edit 
 router.get('/edit/:slug', loginCheck, async (req, res) => {
     const post = await Post.findOne({where: {slug: req.params.slug}}); 
