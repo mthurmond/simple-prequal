@@ -1,19 +1,40 @@
+import { pmt } from './finance.js'; 
+
 // assign admin vars
 const minLoan = 50000; 
 const minDown = 0.03;
 const minFico = 600; 
 const maxDti = 43;
 
-// update calculated elements if any input elements change
+const inputElement = {
+	purchasePrice: document.getElementById('purchase-price'),
+	dp: document.getElementById('down-payment'),
+	dpPercent: document.getElementById('dp-percent'),
+	otherMonthlyDebt: document.getElementById('other-monthly-debt'),
+	totalMonthlyIncome: document.getElementById('monthly-income'),
+	totalAssets: document.getElementById('total-assets'),
+	creditScore: document.getElementById('credit-score') 
+}
+
+const calculatedElement = {
+	loanAmount: document.getElementById('loan-amount'),
+	dpPercent: document.getElementById('dp-percent'),
+	monthlyLoanPayment: document.getElementById('monthly-loan-payment'),
+	totalMonthlyDebt: document.getElementById('total-monthly-debt'),
+	dti: document.getElementById('dti'),	
+	requiredAssets: document.getElementById('required-assets')	
+}
+
+// update calculated elements if input elements change
 const prequalForm = document.getElementById('prequal');
 prequalForm.addEventListener('focusout', function (event) {	
 	updateCalculatedElements();
 });
 
 function updateCalculatedElements() {
-	getInputElementValues();
+	getUserInputs();
 	
-	// recalculate system calculated elements 
+	// recalculate calculated elements 
 	const loanAmount = inputValue.purchasePrice - inputValue.dp; 
 	const dpPercent = Math.round((inputValue.dp / inputValue.purchasePrice) * 100); 
 	const monthlyLoanPayment = Math.round(-pmt(0.05/12, 360, loanAmount));
@@ -53,18 +74,9 @@ function writeCalculatedElementValue(value, element) {
 	}
 }
 
-const calculatedElement = {
-	loanAmount: document.getElementById('loan-amount'),
-	dpPercent: document.getElementById('dp-percent'),
-	monthlyLoanPayment: document.getElementById('monthly-loan-payment'),
-	totalMonthlyDebt: document.getElementById('total-monthly-debt'),
-	dti: document.getElementById('dti'),	
-	requiredAssets: document.getElementById('required-assets')	
-}
-
-// repull latest input values
 let inputValue; 
-function getInputElementValues() {
+// repull latest input values
+function getUserInputs() {
 	inputValue = {
 		purchasePrice: parseInt(inputMask.purchasePrice.unmaskedValue),
 		dp: parseInt(inputMask.dp.unmaskedValue),
@@ -100,16 +112,6 @@ const maskType = {
 	}
 };
 
-const inputElement = {
-	purchasePrice: document.getElementById('purchase-price'),
-	dp: document.getElementById('down-payment'),
-	dpPercent: document.getElementById('dp-percent'),
-	otherMonthlyDebt: document.getElementById('other-monthly-debt'),
-	totalMonthlyIncome: document.getElementById('monthly-income'),
-	totalAssets: document.getElementById('total-assets'),
-	creditScore: document.getElementById('credit-score') 
-}
-
 // add masks
 const inputMask = {
 	purchasePrice: IMask(inputElement.purchasePrice, maskType.number),
@@ -137,39 +139,4 @@ function prequalCheck(dti, requiredAssets) {
 	document.getElementById('prequal-check').innerHTML = prequalifiedDecision;
 	document.getElementById('prequal-details').innerHTML = `${dtiMessage}, ${creditMessage}, ${assetsMessage}.`;
 
-}  
-
-
-
-
-/**
- * Copy of Excel's PMT function.
- * Credit: https://gist.github.com/maarten00/23400873d51bf2ec4eeb
- *
- * @param rate_per_period       The interest rate for the loan.
- * @param number_of_payments    The total number of payments for the loan in months.
- * @param present_value         The present value, or the total amount that a series of future payments is worth now;
- *                              Also known as the principal.
- * @param future_value          The future value, or a cash balance you want to attain after the last payment is made.
- *                              If fv is omitted, it is assumed to be 0 (zero), that is, the future value of a loan is 0.
- * @param type                  Optional, defaults to 0. The number 0 (zero) or 1 and indicates when payments are due.
- *                              0 = At the end of period
- *                              1 = At the beginning of the period
- * @returns {number}
- */
- function pmt(rate_per_period, number_of_payments, present_value, future_value, type){
-    future_value = typeof future_value !== 'undefined' ? future_value : 0;
-    type = typeof type !== 'undefined' ? type : 0;
-
-	if(rate_per_period != 0.0){
-		// Interest rate exists
-		var q = Math.pow(1 + rate_per_period, number_of_payments);
-		return -(rate_per_period * (future_value + (q * present_value))) / ((-1 + q) * (1 + rate_per_period * (type)));
-
-	} else if(number_of_payments != 0.0){
-		// No interest rate, but number of payments exists
-		return -(future_value + present_value) / number_of_payments;
-	}
-
-	return 0;
 }
