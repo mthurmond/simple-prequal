@@ -10,7 +10,7 @@ block content
 					label.form-label(for='purchase-price') Purchase price
 					.input-group
 						span.input-group-text $
-						input#purchase-price.form-control.imask-number(type='text' name='purchase-price' min='100000' max='4000000' placeholder='Purchase price' required)
+						input#purchase-price.form-control.imask-number(type='text' name='purchase-price' placeholder='Purchase price' required)
 						.invalid-feedback Must be between $100,000 and $4,000,000.
 				.col-4.gx-0
 					label.form-label(for='down-payment') Down payment
@@ -69,9 +69,9 @@ block content
 			p#required-assets
 
 			.h2 Credit
-			label.form-label(for='credit-score') Your credit score (300 to 850)
+			label.form-label(for='credit-score') Your credit score
 			input#credit-score.form-control.imask-number.mb-3(type='text' name='credit-score' min='0' placeholder='Credit score' required)
-			.invalid-feedback Test, delete later
+			.invalid-feedback Must be between 300 and 850. 
 			
 			label.form-label.mb-3(for='title') Minimum credit score
 			p 600

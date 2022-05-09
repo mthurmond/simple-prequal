@@ -6,6 +6,8 @@ const minPurchasePrice = 100000;
 const maxPurchasePrice = 4000000;
 const minLoan = 50000; 
 const minDown = 0.03;
+const minPossibleFico = 300;
+const maxPossibleFico = 850; 
 
 // for prequal decision
 const minFico = 600; 
@@ -77,6 +79,7 @@ prequalForm.addEventListener('focusout', function (event) {
 	getUserInputs();
 	updateCalculatedVariables();
 	checkPrequalStatus(dti, requiredAssets);
+	checkValidation();
 });
 
 // get latest user input values
@@ -133,6 +136,38 @@ function updateElementValue(value, element) {
 		element.innerHTML = `$${formattedValue}`;
 	} else {
 		element.innerHTML = '';
+	}
+}
+
+function checkValidation() {
+	removeValidationClasses(inputElement.purchasePrice, inputElement.dp, inputElement.creditScore); 
+
+	if (inputValue.purchasePrice) {
+		if (inputValue.purchasePrice < minPurchasePrice || inputValue.purchasePrice > maxPurchasePrice) {
+			inputElement.purchasePrice.classList.add('is-invalid');
+		} else {
+			inputElement.purchasePrice.classList.add('is-valid');
+		}
+	}
+	if (inputValue.purchasePrice && inputValue.dp) {
+		if (inputValue.dp < (minDown * inputValue.purchasePrice) || loanAmount < minLoan) {
+			inputElement.dp.classList.add('is-invalid');
+		} else {
+			inputElement.dp.classList.add('is-valid');
+		}
+	}
+	if (inputValue.creditScore) {
+		if (inputValue.creditScore < minPossibleFico || inputValue.creditScore > maxPossibleFico) {
+			inputElement.creditScore.classList.add('is-invalid');
+		} else {
+			inputElement.creditScore.classList.add('is-valid');
+		}
+	}
+}
+
+function removeValidationClasses() {
+	for (let i = 0, j = arguments.length; i < j; i++) {
+		arguments[i].classList.remove('is-invalid', 'is-valid');
 	}
 }
 
