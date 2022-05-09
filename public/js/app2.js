@@ -26,7 +26,6 @@ const inputElement = {
 
 const calculatedElement = {
 	loanAmount: document.getElementById('loan-amount'),
-	dpPercent: document.getElementById('dp-percent'),
 	monthlyLoanPayment: document.getElementById('monthly-loan-payment'),
 	totalMonthlyDebt: document.getElementById('total-monthly-debt'),
 	dti: document.getElementById('dti'),	
@@ -77,7 +76,7 @@ let inputValue;
 // update calculated elements and prequal status if input elements change
 prequalForm.addEventListener('focusout', function (event) {	
 	getUserInputs();
-	updateCalculatedVariables();
+	updateCalculatedVariables(event);
 	checkPrequalStatus(dti, requiredAssets);
 	checkValidation();
 });
@@ -99,10 +98,17 @@ function getUserInputs() {
 // will save these to database later
 let loanAmount, dpPercent, monthlyLoanPayment, totalMonthlyDebt, dti, requiredAssets; 
 
-function updateCalculatedVariables() {
+function updateCalculatedVariables(event) {
 	// recalculate calculated elements 
+	// if user updated dp percent, set dp % to new value and update dp. if not, use formula.
+	if (event.target == inputElement.dpPercent) {
+		dpPercent = inputValue.dpPercent; 
+		inputElement.dpPercent.value = dpPercent; 
+		updateDownPayment(); 
+	} else {
+		dpPercent = Math.round((inputValue.dp / inputValue.purchasePrice) * 100); 	
+	}
 	loanAmount = inputValue.purchasePrice - inputValue.dp; 
-	dpPercent = Math.round((inputValue.dp / inputValue.purchasePrice) * 100); 
 	monthlyLoanPayment = Math.round(-pmt(0.05/12, 360, loanAmount));
 	totalMonthlyDebt = Math.round(inputValue.otherMonthlyDebt + monthlyLoanPayment); 
 	dti = Math.round(((totalMonthlyDebt / inputValue.totalMonthlyIncome) * 100)); 
@@ -115,19 +121,25 @@ function updateCalculatedVariables() {
 
 	// write dp percent using custom rules
 	if (!inputValue.purchasePrice || !inputValue.dp || dpPercent > 100) { 
-		document.getElementById('dp-percent').value = '0';
+		inputElement.dpPercent.value = '0';
 	} else {
-		document.getElementById('dp-percent').value = dpPercent.toString();
+		inputElement.dpPercent.value = dpPercent.toString();
 	}
 
 	// write dti using custom rules
 	const formattedDti = `${dti.toString()}%`;
 	if (dti > 0) {
-		document.getElementById('dti').innerHTML = `${formattedDti}`;
+		calculatedElement.dti.innerHTML = `${formattedDti}`;
 	} else {
-		document.getElementById('dti').innerHTML = '';
+		calculatedElement.dti.innerHTML = '';
 	}	
 };
+
+// update down payment when user enters dp percent value
+function updateDownPayment() {
+	inputValue.dp = (dpPercent / 100) * inputValue.purchasePrice; 
+	inputElement.dp.value = inputValue.dp.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
+}
 
 function updateElementValue(value, element) {
 	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
@@ -142,6 +154,7 @@ function updateElementValue(value, element) {
 function checkValidation() {
 	removeValidationClasses(inputElement.purchasePrice, inputElement.dp, inputElement.creditScore); 
 
+	// purchase price
 	if (inputValue.purchasePrice) {
 		if (inputValue.purchasePrice < minPurchasePrice || inputValue.purchasePrice > maxPurchasePrice) {
 			inputElement.purchasePrice.classList.add('is-invalid');
@@ -149,6 +162,8 @@ function checkValidation() {
 			inputElement.purchasePrice.classList.add('is-valid');
 		}
 	}
+	// down payment
+	console.log(inputValue.purchasePrice, inputValue.dp, minDown, loanAmount, minLoan)
 	if (inputValue.purchasePrice && inputValue.dp) {
 		if (inputValue.dp < (minDown * inputValue.purchasePrice) || loanAmount < minLoan) {
 			inputElement.dp.classList.add('is-invalid');
@@ -156,6 +171,7 @@ function checkValidation() {
 			inputElement.dp.classList.add('is-valid');
 		}
 	}
+	// credit score
 	if (inputValue.creditScore) {
 		if (inputValue.creditScore < minPossibleFico || inputValue.creditScore > maxPossibleFico) {
 			inputElement.creditScore.classList.add('is-invalid');
