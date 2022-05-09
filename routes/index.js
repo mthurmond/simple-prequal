@@ -40,32 +40,6 @@ router.get('/', async (req, res) => {
     res.render('index', { posts, nextPage }); 
 }); 
 
-// GET /page/:page-number
-router.get('/page/:page', async (req, res, next) => {
-    try {
-        // show draft posts if user logged in
-        const allowedStatuses = req.session.userId ? ['live', 'draft'] : ['live'];
-        // select posts to show on page 
-        const page = parseInt(req.params.page); 
-        const queryOffset = (page - 1) * postsPerPage;
-        const posts = await Post.findAll({where: {status: {[Op.or]: allowedStatuses}}, order: [[ 'createdAt', 'DESC' ]], limit: postsPerPage, offset: queryOffset}); 
-        // if no posts exist for page entered, throw error
-        if (posts <= 0) {
-            throw new Error(); 
-        }
-        // add "show more posts" button if applicable
-        const maxViewedPosts = page * postsPerPage; 
-        const postCount = await Post.count({ where: { status: {[Op.or]: allowedStatuses} } });
-        const nextPage = (postCount > maxViewedPosts) ? page + 1 : null;
-        res.render('index', { posts, nextPage }); 
-    } 
-    catch (err) {
-        err = new Error('This page could not be found.'); 
-        err.status = 404; 
-        next(err); 
-    }
-}); 
-
 // GET /register
 router.get('/register', (req, res) => {
     res.render('register', { title: "Register" }); 
@@ -138,41 +112,10 @@ router.get('/logout', function(req, res, next) {
     return res.redirect('/'); 
 });  
 
-// POST /new
-router.post('/new', loginCheck, async (req, res) => {
-    const post = await Post.create(req.body); 
-    res.redirect(`/${post.slug}`);   
-});
-
 // GET /prequal
 router.get('/prequal', (req, res) => {
     res.render('prequal', { title: "New prequal" }); 
 }); 
-
-// GET /prequal2
-router.get('/prequal2', (req, res) => {
-    res.render('prequal2', { title: "New prequal" }); 
-}); 
-
-// GET /edit 
-router.get('/edit/:slug', loginCheck, async (req, res) => {
-    const post = await Post.findOne({where: {slug: req.params.slug}}); 
-    res.render('edit', { post, title: `Edit post | ${post.title}` }); 
-}); 
-
-// POST /edit 
-router.post('/edit/:slug', loginCheck, async (req, res) => {
-    const post = await Post.findOne({where: {slug: req.params.slug}}); 
-    await post.update(req.body); 
-    res.redirect(`/${post.slug}`);   
-});
-
-// POST /destroy
-router.post('/destroy/:slug', loginCheck, async (req, res) => {
-    const post = await Post.findOne({where: {slug: req.params.slug}}); 
-    await post.destroy(); 
-    res.redirect('/');   
-});
 
 // GET /:slug
 router.get('/:slug', async (req, res, next) => {

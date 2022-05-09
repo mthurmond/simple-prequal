@@ -1,363 +1,204 @@
-var purchasePriceMask = IMask(document.querySelector('#purchase-price'), {
-	mask: Number,
-	min: 0,
-	max: 9999999999,
-	thousandsSeparator: ','
-});
+import { pmt } from './finance.js'; 
 
-var downPaymentMask = IMask(document.querySelector('#down-payment'), {
-	mask: Number,
-	min: 0,
-	max: 9999999999,
-	thousandsSeparator: ','
-});
-
-var downPaymentPercentMask = IMask(document.querySelector('#down-payment-percent'), {
-	mask: Number,
-	min: 0,
-	max: 100, 
-	scale: 0
-});
-
-var monthlyIncomeMask = IMask(document.querySelector('#monthly-income'), {
-	mask: Number,
-	min: 0,
-	max: 9999999999,
-	thousandsSeparator: ','
-});
-
-let otherMonthlyDebtMask = IMask(document.querySelector('#other-monthly-debt'), {
-	mask: Number,
-	min: 0,
-	max: 9999999999,
-	thousandsSeparator: ','
-});
-
-let totalAssetsMask = IMask(document.querySelector('#total-assets'), {
-	mask: Number,
-	min: 0,
-	max: 9999999999,
-	thousandsSeparator: ','
-});
-
-let creditScoreMask = IMask(document.querySelector('#credit-score'), {
-	mask: Number,
-	min: 0,
-	max: 850,
-});
-
+// ASSIGN CONSTANTS
+// for validation
+const minPurchasePrice = 100000;
+const maxPurchasePrice = 4000000;
 const minLoan = 50000; 
 const minDown = 0.03;
+const minPossibleFico = 300;
+const maxPossibleFico = 850; 
 
-let purchaseInput = document.getElementById('purchase-price');
-let dpInput = document.getElementById('down-payment');
-let dpPercentInput = document.getElementById('down-payment-percent');
-let otherMonthlyDebtInput = document.getElementById('other-monthly-debt');
-let totalMonthlyIncomeInput = document.getElementById('monthly-income');
-let totalAssetsInput = document.getElementById('total-assets');
-let creditScoreInput = document.getElementById('credit-score');
-
-(function () {
-	'use strict';
-	
-	// PURCHASE PRICE
-	purchaseInput.addEventListener('blur', function (event) {
-		// reset
-		purchaseInput.classList.remove('is-invalid')
-		purchaseInput.classList.remove('is-valid')
-
-		const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-		const min = parseInt(event.target.min); 
-		const max = parseInt(event.target.max); 
-
-		if (!purchasePrice) { return }
-
-		if (purchasePrice < min || purchasePrice > max) {
-			purchaseInput.classList.add('is-invalid');
-		} else {
-			purchaseInput.classList.add('is-valid');
-		}
-
-		var event = new Event('blur');
-		dpInput.dispatchEvent(event);
-		
-		calculateDownPaymentPercent(); 
-		calculateLoanAmount(); 
-		calculateMonthlyLoanPayment(); 
-		calculateRequiredAssets(); 
-	});
-
-	// DOWN PAYMENT
-	dpInput.addEventListener('blur', function (event) {
-		// reset
-		dpInput.classList.remove('is-invalid')
-		dpInput.classList.remove('is-valid')
-		
-		const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-		const downPayment = parseInt(downPaymentMask.unmaskedValue);
-		const loanAmount = purchasePrice - downPayment; 
-
-		if (!purchasePrice || !downPayment) { return }
-
-		if (downPayment < (minDown * purchasePrice) || loanAmount < minLoan) {
-			dpInput.classList.add('is-invalid');
-		} else {
-			dpInput.classList.add('is-valid');
-		}
-		calculateDownPaymentPercent(); 
-		calculateLoanAmount(); 
-		calculateMonthlyLoanPayment(); 
-		calculateRequiredAssets(); 
-	});
-
-	// DP PERCENT 
-	dpPercentInput.addEventListener('blur', function (event) {
-		// reset
-		dpPercentInput.classList.remove('is-invalid')
-		dpPercentInput.classList.remove('is-valid')
-
-		const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-		const downPaymentPercent = parseInt(dpPercentInput.value) / 100; 
-		console.log(downPaymentPercent);
-		const newDownPayment = Math.round(purchasePrice * downPaymentPercent); 
-		
-		if (!purchasePrice) { 
-			document.getElementById('down-payment-percent').value = '0';
-		} else {
-			document.getElementById('down-payment').value = newDownPayment.toString();
-		}
-
-		var event = new Event('blur');
-		dpInput.dispatchEvent(event);
-		
-		calculateLoanAmount(); 
-		calculateMonthlyLoanPayment(); 
-	});
-
-	// OTHER MONTHLY DEBT
-	otherMonthlyDebtInput.addEventListener('blur', function (event) {	
-		calculateTotalMonthlyDebt();
-	});
-
-	// TOTAL MONTHLY INCOME
-	totalMonthlyIncomeInput.addEventListener('blur', function (event) {	
-		calculateDti();
-	});
-
-	// TOTAL ASSETS
-	totalAssetsInput.addEventListener('blur', function (event) {	
-		prequalCheck();
-	});
-
-	// CREDIT SCORE
-	creditScoreInput.addEventListener('blur', function (event) {	
-		prequalCheck();
-	});
-
-})();
-
-function calculateLoanAmount() {
-	const downPayment = parseInt(downPaymentMask.unmaskedValue);
-	const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-	const loanAmount = purchasePrice - downPayment; 
-
-	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
-	const formattedLoanAmount = loanAmount.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
-
-	if (loanAmount > 0) {
-		document.getElementById('loan-amount').innerHTML = `$${formattedLoanAmount}`;
-	} else {
-		document.getElementById('loan-amount').innerHTML = '';
-	}
-		
-}
-
-function calculateDownPaymentPercent() {
-	const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-	const downPayment = parseInt(downPaymentMask.unmaskedValue);
-	const downPaymentPercent = Math.round((downPayment / purchasePrice) * 100); 
-	console.log(downPaymentPercent); 
-
-	if (!purchasePrice || !downPayment || downPaymentPercent > 100) { 
-		document.getElementById('down-payment-percent').value = '0';
-	} else {
-		document.getElementById('down-payment-percent').value = downPaymentPercent.toString();
-	}
-
-}
-
-let monthlyLoanPaymentCalc = 0; 
-
-function calculateMonthlyLoanPayment() {
-	const downPayment = parseInt(downPaymentMask.unmaskedValue);
-	const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-	const loanAmount = purchasePrice - downPayment; 
-	monthlyLoanPaymentCalc = Math.round(-pmt(0.05/12, 360, loanAmount));
-
-	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
-	const formattedMonthlyLoanPayment = monthlyLoanPaymentCalc.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
-
-	if (monthlyLoanPaymentCalc > 0) {
-		document.getElementById('monthly-payment').innerHTML = `$${formattedMonthlyLoanPayment}`;
-	} else {
-		document.getElementById('monthly-payment').innerHTML = '';
-	}
-
-	calculateTotalMonthlyDebt(); 
-		
-}
-
-let totalMonthlyDebt; 
-
-function calculateTotalMonthlyDebt() {
-	const otherMonthlyDebt = parseInt(otherMonthlyDebtMask.unmaskedValue);
-	totalMonthlyDebt = Math.round(otherMonthlyDebt + monthlyLoanPaymentCalc); 
-
-	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
-	const formattedTotalMonthlyDebt = totalMonthlyDebt.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
-
-	if (totalMonthlyDebt > 0) {
-		document.getElementById('total-monthly-debt').innerHTML = `$${formattedTotalMonthlyDebt}`;
-	} else {
-		document.getElementById('total-monthly-debt').innerHTML = '';
-	}
-
-	calculateDti(); 
-		
-}
-
-let dti; 
-
-function calculateDti() {
-	const totalMonthlyIncome = parseInt(monthlyIncomeMask.unmaskedValue);
-	dti = Math.round(((totalMonthlyDebt / totalMonthlyIncome) * 100)); 
-
-	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
-	const formattedDti = `${dti.toString()}%`;
-
-	if (dti > 0) {
-		document.getElementById('dti').innerHTML = `${formattedDti}`;
-	} else {
-		document.getElementById('dti').innerHTML = '';
-	}	
-	prequalCheck(); 
-}
-
-let requiredAssetsCalc = 0; 
-
-function calculateRequiredAssets() {
-	const downPayment = parseInt(downPaymentMask.unmaskedValue);
-	const purchasePrice = parseInt(purchasePriceMask.unmaskedValue);
-	requiredAssetsCalc = Math.round(downPayment + (purchasePrice * 0.03));
-
-	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
-	const formattedRequiredAssets = requiredAssetsCalc.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
-
-	if (requiredAssetsCalc > 0) {
-		document.getElementById('required-assets').innerHTML = `$${formattedRequiredAssets}`;
-	} else {
-		document.getElementById('required-assets').innerHTML = '';
-	}
-		
-}
-
+// for prequal decision
 const minFico = 600; 
 const maxDti = 43;
 
-function prequalCheck() {
-	const assets = parseInt(totalAssetsMask.unmaskedValue);
-	const creditScore = parseInt(creditScoreMask.unmaskedValue); 
-	
+// CREATE POINTERS TO ELEMENTS
+const inputElement = {
+	purchasePrice: document.getElementById('purchase-price'),
+	dp: document.getElementById('down-payment'),
+	dpPercent: document.getElementById('dp-percent'),
+	otherMonthlyDebt: document.getElementById('other-monthly-debt'),
+	totalMonthlyIncome: document.getElementById('monthly-income'),
+	totalAssets: document.getElementById('total-assets'),
+	creditScore: document.getElementById('credit-score') 
+}
+
+const calculatedElement = {
+	loanAmount: document.getElementById('loan-amount'),
+	monthlyLoanPayment: document.getElementById('monthly-loan-payment'),
+	totalMonthlyDebt: document.getElementById('total-monthly-debt'),
+	dti: document.getElementById('dti'),	
+	requiredAssets: document.getElementById('required-assets')	
+}
+
+const prequalForm = document.getElementById('prequal');
+
+// ADD MASKS TO ELEMENTS --> 
+
+// create mask types
+const maskType = {
+	number: {
+		mask: Number,
+		min: 0,
+		max: 9999999999,
+		thousandsSeparator: ','
+	}, 
+	percent: {
+		mask: Number,
+		min: 0,
+		max: 100, 
+		scale: 0
+	}, 
+	credit: {
+		mask: Number,
+		min: 0,
+		max: 999
+	}
+};
+
+// add masks
+const inputMask = {
+	purchasePrice: IMask(inputElement.purchasePrice, maskType.number),
+	dp: IMask(inputElement.dp, maskType.number),
+	dpPercent: IMask(inputElement.dpPercent, maskType.percent),
+	otherMonthlyDebt: IMask(inputElement.otherMonthlyDebt, maskType.number),
+	totalMonthlyIncome: IMask(inputElement.totalMonthlyIncome, maskType.number),
+	totalAssets: IMask(inputElement.totalAssets, maskType.number),
+	creditScore: IMask(inputElement.creditScore, maskType.credit)
+}
+
+// FUNCTIONS --> 
+
+// declare global variables used in fuctions
+let inputValue; 
+
+// update calculated elements and prequal status if input elements change
+prequalForm.addEventListener('focusout', function (event) {	
+	getUserInputs();
+	updateCalculatedVariables(event);
+	checkPrequalStatus(dti, requiredAssets);
+	checkValidation();
+});
+
+// get latest user input values
+function getUserInputs() {
+	inputValue = {
+		purchasePrice: parseInt(inputMask.purchasePrice.unmaskedValue),
+		dp: parseInt(inputMask.dp.unmaskedValue),
+		dpPercent: parseInt(inputMask.dpPercent.unmaskedValue),
+		otherMonthlyDebt: parseInt(inputMask.otherMonthlyDebt.unmaskedValue),
+		totalMonthlyIncome: parseInt(inputMask.totalMonthlyIncome.unmaskedValue),
+		totalAssets: parseInt(inputMask.totalAssets.unmaskedValue),
+		creditScore: parseInt(inputMask.creditScore.unmaskedValue) 
+	}
+}
+
+// declare calculated variables so they persist and can be used by other fuctions
+// will save these to database later
+let loanAmount, dpPercent, monthlyLoanPayment, totalMonthlyDebt, dti, requiredAssets; 
+
+function updateCalculatedVariables(event) {
+	// recalculate calculated elements 
+	// if user updated dp percent, set dp % to new value and update dp. if not, use formula.
+	if (event.target == inputElement.dpPercent) {
+		dpPercent = inputValue.dpPercent; 
+		inputElement.dpPercent.value = dpPercent; 
+		updateDownPayment(); 
+	} else {
+		dpPercent = Math.round((inputValue.dp / inputValue.purchasePrice) * 100); 	
+	}
+	loanAmount = inputValue.purchasePrice - inputValue.dp; 
+	monthlyLoanPayment = Math.round(-pmt(0.05/12, 360, loanAmount));
+	totalMonthlyDebt = Math.round(inputValue.otherMonthlyDebt + monthlyLoanPayment); 
+	dti = Math.round(((totalMonthlyDebt / inputValue.totalMonthlyIncome) * 100)); 
+	requiredAssets = Math.round(inputValue.dp + (inputValue.purchasePrice * 0.03));
+
+	updateElementValue(loanAmount, calculatedElement.loanAmount); 
+	updateElementValue(monthlyLoanPayment, calculatedElement.monthlyLoanPayment); 
+	updateElementValue(totalMonthlyDebt, calculatedElement.totalMonthlyDebt);
+	updateElementValue(requiredAssets, calculatedElement.requiredAssets); 
+
+	// write dp percent using custom rules
+	if (!inputValue.purchasePrice || !inputValue.dp || dpPercent > 100) { 
+		inputElement.dpPercent.value = '0';
+	} else {
+		inputElement.dpPercent.value = dpPercent.toString();
+	}
+
+	// write dti using custom rules
+	const formattedDti = `${dti.toString()}%`;
+	if (dti > 0) {
+		calculatedElement.dti.innerHTML = `${formattedDti}`;
+	} else {
+		calculatedElement.dti.innerHTML = '';
+	}	
+};
+
+// update down payment when user enters dp percent value
+function updateDownPayment() {
+	inputValue.dp = (dpPercent / 100) * inputValue.purchasePrice; 
+	inputElement.dp.value = inputValue.dp.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
+}
+
+function updateElementValue(value, element) {
+	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
+	const formattedValue = value.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
+	if (value > 0) {
+		element.innerHTML = `$${formattedValue}`;
+	} else {
+		element.innerHTML = '';
+	}
+}
+
+function checkValidation() {
+	removeValidationClasses(inputElement.purchasePrice, inputElement.dp, inputElement.creditScore); 
+
+	// purchase price
+	if (inputValue.purchasePrice) {
+		if (inputValue.purchasePrice < minPurchasePrice || inputValue.purchasePrice > maxPurchasePrice) {
+			inputElement.purchasePrice.classList.add('is-invalid');
+		} else {
+			inputElement.purchasePrice.classList.add('is-valid');
+		}
+	}
+	// down payment
+	console.log(inputValue.purchasePrice, inputValue.dp, minDown, loanAmount, minLoan)
+	if (inputValue.purchasePrice && inputValue.dp) {
+		if (inputValue.dp < (minDown * inputValue.purchasePrice) || loanAmount < minLoan) {
+			inputElement.dp.classList.add('is-invalid');
+		} else {
+			inputElement.dp.classList.add('is-valid');
+		}
+	}
+	// credit score
+	if (inputValue.creditScore) {
+		if (inputValue.creditScore < minPossibleFico || inputValue.creditScore > maxPossibleFico) {
+			inputElement.creditScore.classList.add('is-invalid');
+		} else {
+			inputElement.creditScore.classList.add('is-valid');
+		}
+	}
+}
+
+function removeValidationClasses() {
+	for (let i = 0, j = arguments.length; i < j; i++) {
+		arguments[i].classList.remove('is-invalid', 'is-valid');
+	}
+}
+
+function checkPrequalStatus(dti, requiredAssets) {
 	const dtiQualified = (dti <= maxDti) ? true:false; 
-	console.log('max dti' + maxDti + ' dti ' + dti); 
-	console.log(dtiQualified); 	
-
-	const creditQualified = (creditScore >= minFico) ? true:false; 
-	console.log(creditQualified);
-
-	const assetsQualified = (assets >= requiredAssetsCalc) ? true:false; 
-	console.log(assetsQualified);
+	const creditQualified = (inputValue.creditScore >= minFico) ? true:false; 
+	const assetQualified = (inputValue.totalAssets >= requiredAssets) ? true:false; 
 
 	// const prequalStatus = 
 	let dtiMessage = (dtiQualified) ? 'DTI qualifies':'DTI is too high'; 
 	let creditMessage = (creditQualified) ? 'Credit qualifies':'Credit is too low';
-	let assetsMessage = (assetsQualified) ? 'Assets qualify':'Assets are too low'; 
+	let assetsMessage = (assetQualified) ? 'Assets qualify':'Assets are too low'; 
 
-	const prequalifiedDecision = (dtiQualified && creditQualified && assetsQualified) ? 'Congratulations, you are pre-qualified!':'Unfotunately, you are not pre-qualified at this time.'; 
+	const prequalifiedDecision = (dtiQualified && creditQualified && assetQualified) ? 'Congratulations, you are pre-qualified!':'Unfotunately, you are not pre-qualified at this time.'; 
 
 	document.getElementById('prequal-check').innerHTML = prequalifiedDecision;
 	document.getElementById('prequal-details').innerHTML = `${dtiMessage}, ${creditMessage}, ${assetsMessage}.`;
-
-}  
-
-
-
-
-
-
-
-
-
-
-// TRIX JS FOR LOADING IMAGES - DELETE LATER
-(function () {
-	var HOST = "https://d13txem1unpe48.cloudfront.net/"
-
-	addEventListener("trix-attachment-add", function (event) {
-		if (event.attachment.file) {
-			uploadFileAttachment(event.attachment)
-		}
-	})
-
-	function uploadFileAttachment(attachment) {
-		uploadFile(attachment.file, setProgress, setAttributes)
-
-		function setProgress(progress) {
-			attachment.setUploadProgress(progress)
-		}
-
-		function setAttributes(attributes) {
-			attachment.setAttributes(attributes)
-		}
-	}
-
-	function uploadFile(file, progressCallback, successCallback) {
-		var key = createStorageKey(file)
-		var formData = createFormData(key, file)
-		var xhr = new XMLHttpRequest()
-
-		xhr.open("POST", HOST, true)
-
-		xhr.upload.addEventListener("progress", function (event) {
-			var progress = event.loaded / event.total * 100
-			progressCallback(progress)
-		})
-
-		xhr.addEventListener("load", function (event) {
-			if (xhr.status == 204) {
-				var attributes = {
-					url: HOST + key,
-					href: HOST + key + "?content-disposition=attachment"
-				}
-				successCallback(attributes)
-			}
-		})
-
-		xhr.send(formData)
-	}
-
-	function createStorageKey(file) {
-		var date = new Date()
-		var day = date.toISOString().slice(0, 10)
-		var name = date.getTime() + "-" + file.name
-		return ["tmp", day, name].join("/")
-	}
-
-	function createFormData(key, file) {
-		var data = new FormData()
-		data.append("key", key)
-		data.append("Content-Type", file.type)
-		data.append("file", file)
-		return data
-	}
-})();
+}

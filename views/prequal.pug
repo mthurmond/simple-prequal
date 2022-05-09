@@ -2,15 +2,15 @@ extends layout
 
 block content
 	.container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
-		form(action="/new", method="post")
+		form#prequal(action="/new", method="post")
 
-			.h2 Loan details
+			.h2 Loan
 			.row
 				.col-6 
 					label.form-label(for='purchase-price') Purchase price
 					.input-group
 						span.input-group-text $
-						input#purchase-price.form-control.imask-number(type='text' name='purchase-price' min='100000' max='4000000' placeholder='Purchase price' required)
+						input#purchase-price.form-control.imask-number(type='text' name='purchase-price' placeholder='Purchase price' required)
 						.invalid-feedback Must be between $100,000 and $4,000,000.
 				.col-4.gx-0
 					label.form-label(for='down-payment') Down payment
@@ -20,9 +20,9 @@ block content
 						.invalid-feedback Must be at least 3% of your purchase price, and allow for a loan of $50,000 or more.
 
 				.col-2.gx-0
-					label.form-label.invisible(for='down-payment-percent') %
+					label.form-label.invisible(for='dp-percent') %
 					.input-group
-						input#down-payment-percent.form-control(type='text' name='down-payment-percent' required)
+						input#dp-percent.form-control(type='text' name='dp-percent' required)
 						span.input-group-text %
 
 			label.form-label(for='loan-amount') Loan amount
@@ -30,15 +30,17 @@ block content
 			.mb-5
 
 
-			.h2 Debt and income
+			.h2 Debt-to-income (DTI)
+			.h4 Income
 			label.form-label(for='monthly-income') Monthly income
 			.input-group.mb-3
 				span.input-group-text $
 				input#monthly-income.form-control.imask-number(type='text' name='monthly-income' min='0' placeholder='Monthly income' required)
 				.invalid-feedback Test, delete later
-
-			label.form-label.mb-2(for='monthly-payment') Monthly new home payment
-			p#monthly-payment
+			
+			.h4 Debt
+			label.form-label.mb-2(for='monthly-loan-payment') Monthly new home payment
+			p#monthly-loan-payment
 
 			label.form-label(for='other-monthly-debt') Other monthly debt payments
 			.input-group.mb-3
@@ -49,6 +51,7 @@ block content
 			label.form-label.mb-3(for='total-monthly-debt') Total monthly debt payments
 			p#total-monthly-debt
 
+			.h4 DTI ratio
 			label.form-label.mb-3(for='dti') Your DTI
 			p#dti
 
@@ -65,10 +68,10 @@ block content
 			label.form-label.mb-3(for='required-assets') Required assets
 			p#required-assets
 
-			.h2 Credit score
+			.h2 Credit
 			label.form-label(for='credit-score') Your credit score
 			input#credit-score.form-control.imask-number.mb-3(type='text' name='credit-score' min='0' placeholder='Credit score' required)
-			.invalid-feedback Test, delete later
+			.invalid-feedback Must be between 300 and 850. 
 			
 			label.form-label.mb-3(for='title') Minimum credit score
 			p 600
@@ -82,5 +85,5 @@ block content
 
 			// action buttons
 			.mb-5
-			input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
-			button.btn.btn-primary.mx-3(type='submit') Submit
+			input.btn.btn-secondary(type='button' name='cancel' value='Reset' onClick="window.location.href='/';")
+			button.btn.btn-primary.mx-3(type='submit') Save
