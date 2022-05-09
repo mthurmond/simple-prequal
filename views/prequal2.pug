@@ -4,7 +4,7 @@ block content
 	.container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
 		form#prequal(action="/new", method="post")
 
-			.h2 Loan details
+			.h2 Loan
 			.row
 				.col-6 
 					label.form-label(for='purchase-price') Purchase price
@@ -30,13 +30,15 @@ block content
 			.mb-5
 
 
-			.h2 Debt and income
+			.h2 Debt-to-income (DTI)
+			.h4 Income
 			label.form-label(for='monthly-income') Monthly income
 			.input-group.mb-3
 				span.input-group-text $
 				input#monthly-income.form-control.imask-number(type='text' name='monthly-income' min='0' placeholder='Monthly income' required)
 				.invalid-feedback Test, delete later
-
+			
+			.h4 Debt
 			label.form-label.mb-2(for='monthly-loan-payment') Monthly new home payment
 			p#monthly-loan-payment
 
@@ -49,6 +51,7 @@ block content
 			label.form-label.mb-3(for='total-monthly-debt') Total monthly debt payments
 			p#total-monthly-debt
 
+			.h4 DTI ratio
 			label.form-label.mb-3(for='dti') Your DTI
 			p#dti
 
@@ -65,8 +68,8 @@ block content
 			label.form-label.mb-3(for='required-assets') Required assets
 			p#required-assets
 
-			.h2 Credit score
-			label.form-label(for='credit-score') Your credit score
+			.h2 Credit
+			label.form-label(for='credit-score') Your credit score (300 to 850)
 			input#credit-score.form-control.imask-number.mb-3(type='text' name='credit-score' min='0' placeholder='Credit score' required)
 			.invalid-feedback Test, delete later
 			
@@ -82,5 +85,5 @@ block content
 
 			// action buttons
 			.mb-5
-			input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
-			button.btn.btn-primary.mx-3(type='submit') Submit
+			input.btn.btn-secondary(type='button' name='cancel' value='Reset' onClick="window.location.href='/';")
+			button.btn.btn-primary.mx-3(type='submit') Save
