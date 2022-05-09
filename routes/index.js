@@ -66,16 +66,9 @@ router.post('/register', rateLimiter, async (req, res, next) => {
         err.status = 401; 
         next(err);
     } else {
-        //ensure email is on approved list
-        if (req.body.email === process.env.APPROVED_EMAIL) {
-            const user = await User.create(req.body); 
-            req.session.userId = user.id;
-            res.redirect('/'); 
-        } else {
-            const err = new Error('Email is not on approved list');
-            err.status = 401;
-            next(err);
-        }
+        const user = await User.create(req.body); 
+        req.session.userId = user.id;
+        res.redirect('/'); 
     }
 }); 
 
