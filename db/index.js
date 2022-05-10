@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 if (process.env.NODE_ENV === 'development') {
     sequelize = new Sequelize(process.env.DATABASE_URL, {
-      logging: false
+      logging: true
     });
 } else {
     sequelize = new Sequelize(process.env.DATABASE_URL, {
@@ -24,5 +24,6 @@ const db = {
 
 db.models.Post = require('./models/post.js')(sequelize); 
 db.models.User = require('./models/user.js')(sequelize); 
+db.models.Prequal = require('./models/prequal.js')(sequelize); 
 
 module.exports = db;

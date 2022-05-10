@@ -8,6 +8,7 @@ const db = require('../db');
 const { Op } = Sequelize;  // load operations module
 const { Post } = db.models;
 const { User } = db.models;
+const { Prequal } = db.models;
 
 // use express-rate-limit package to limit registration and login requests 
 const rateLimiter = rateLimit({
@@ -27,17 +28,15 @@ const loginCheck = function (req, res, next) {
     }
 };
 
-const postsPerPage = 10;
+const prequalsPerPage = 10;
 
 // GET /
 router.get('/', async (req, res) => {
-    // show draft posts if user logged in
-    const allowedStatuses = req.session.userId ? ['live', 'draft'] : ['live'];
-    const postCount = await Post.count({ where: { status: {[Op.or]: allowedStatuses} } }); 
+    const prequalCount = await Prequal.count(); 
     // determine if pagination needed
-    const nextPage = (postCount > postsPerPage) ? 2 : null; 
-    const posts = await Post.findAll({ where: { status: {[Op.or]: allowedStatuses} }, order: [[ 'createdAt', 'DESC' ]], limit: postsPerPage }); 
-    res.render('index', { posts, nextPage }); 
+    const nextPage = (prequalCount > prequalsPerPage) ? 2 : null; 
+    const prequals = await Prequal.findAll({ order: [[ 'createdAt', 'DESC' ]], prequalsPerPage }); 
+    res.render('index', { prequals, nextPage }); 
 }); 
 
 // GET /register
@@ -112,21 +111,36 @@ router.get('/new', (req, res) => {
 
 // POST /new
 router.post('/new', async (req, res) => {
-    // const post = await Prequal.create(req.body); 
-    res.redirect(`/`);   
+    const prequal = await Prequal.create(req.body); 
+    console.log(req.body); 
+    res.redirect(`/${prequal.id}`);   
 });
 
-// GET /:slug
-router.get('/:slug', async (req, res, next) => {
+// GET /edit 
+router.get('/edit/:id', async (req, res) => {
+    const prequal = await Prequal.findOne({where: {id: req.params.id}}); 
+    res.render('edit', { prequal, title: `Edit prequal | ${prequal.id}` }); 
+}); 
+
+// POST /edit 
+router.post('/edit/:slug', loginCheck, async (req, res) => {
+    const post = await Post.findOne({where: {slug: req.params.slug}}); 
+    await post.update(req.body); 
+    res.redirect(`/${post.slug}`);   
+});
+
+// POST /destroy
+router.post('/destroy/:id', async (req, res) => {
+    const prequal = await Prequal.findOne({where: {id: req.params.id}}); 
+    await prequal.destroy(); 
+    res.redirect('/');   
+});
+
+// GET /:id
+router.get('/:id', async (req, res, next) => {
     try {
-        const post = await Post.findOne({where: {slug: req.params.slug}});
-        // throw error if unauthenticated user attempting to view draft post
-        if(post.status == 'draft' && !req.session.userId) {
-            let err = new Error('You must be logged in to perform this action.');
-            err.status = 401;
-            return next(err);
-        }
-        res.render('post', { post, title: post.title } );
+        const prequal = await Prequal.findOne({where: {id: req.params.id}});
+        res.render('prequal', { prequal, title: `Prequal: ${prequal.id}` } );
     } 
     catch(err) {
         err = new Error("This post could not be found.");

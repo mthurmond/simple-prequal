@@ -2,60 +2,57 @@ extends layout
 
 block content
 	.container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
-		form#prequal(action="/new", method="post")
+		form#prequal(action=`/edit/${prequal.id}`, method="post")
 			.h2 Loan
 			.row
 				.col-6 
 					label.form-label(for='purchasePrice') Purchase price
 					.input-group
 						span.input-group-text $
-						input#purchase-price.form-control.imask-number(type='text' name='purchasePrice' placeholder='Purchase price' required)
+						input#purchase-price.form-control.imask-number(type='text' name='purchasePrice' placeholder='Purchase price' required value=prequal.purchasePrice)
 						.invalid-feedback Must be between $100,000 and $4,000,000.
 				.col-4.gx-0
 					label.form-label(for='downPayment') Down payment
 					.input-group
 						span.input-group-text $
-						input#down-payment.form-control.imask-down-payment(type='text' name='downPayment' placeholder='Down payment' required)
+						input#down-payment.form-control.imask-down-payment(type='text' name='downPayment' placeholder='Down payment' required value=prequal.downPayment)
 						.invalid-feedback Must be at least 3% of your purchase price, and allow for a loan of $50,000 or more.
 
 				.col-2.gx-0
 					label.form-label.invisible(for='dpPercent') %
 					.input-group
-						input#dp-percent.form-control(type='text' name='dpPercent' required)
+						input#dp-percent.form-control(type='text' name='dpPercent' required value=prequal.dpPercent)
 						span.input-group-text %
 
-			label.form-label.mt-2(for='loanAmount') Loan amount
+			label.form-label(for='loan-amount') Loan amount
 			p#loan-amount
-			input#loan-amount-hidden(type='hidden' name='loanAmount') 
 			.mb-5
+
 
 			.h2 Debt-to-income (DTI)
 			.h4 Income
 			label.form-label(for='monthlyIncome') Monthly income
 			.input-group.mb-3
 				span.input-group-text $
-				input#monthly-income.form-control.imask-number(type='text' name='monthlyIncome' min='0' placeholder='Monthly income' required)
+				input#monthly-income.form-control.imask-number(type='text' name='monthlyIncome' min='0' placeholder='Monthly income' required value=prequal.monthlyIncome)
 				.invalid-feedback Test, delete later
 			
 			.h4 Debt
-			label.form-label.mb-2(for='monthlyLoanPayment') Monthly new home payment
+			label.form-label.mb-2(for='monthly-loan-payment') Monthly new home payment
 			p#monthly-loan-payment
-			input#monthly-loan-payment-hidden(type='hidden' name='monthlyLoanPayment')
 
 			label.form-label(for='otherMonthlyDebt') Other monthly debt payments
 			.input-group.mb-3
 				span.input-group-text $
-				input#other-monthly-debt.form-control.imask-number(type='text' name='otherMonthlyDebt' min='0' placeholder='Other monthly debt payments' required)
+				input#other-monthly-debt.form-control.imask-number(type='text' name='otherMonthlyDebt' min='0' placeholder='Other monthly debt payments' required value=prequal.otherMonthlyDebt)
 				.invalid-feedback Test, delete later
 
 			label.form-label.mb-3(for='totalMonthlyDebt') Total monthly debt payments
 			p#total-monthly-debt
-			input#total-monthly-debt-hidden(type='hidden' name='totalMonthlyDebt')
 
 			.h4 DTI ratio
 			label.form-label.mb-3(for='dti') Your DTI
 			p#dti
-			input#dti-hidden(type='hidden' name='dti')
 
 			label.form-label.mb-3(for='max-dti') Max DTI
 			p 43%
@@ -64,31 +61,28 @@ block content
 			label.form-label(for='totalAssets') Total assets
 			.input-group.mb-3
 				span.input-group-text $
-				input#total-assets.form-control.imask-number(type='text' name='totalAssets' min='0' placeholder='Total assets' required)
+				input#total-assets.form-control.imask-number(type='text' name='totalAssets' min='0' placeholder='Total assets' required value=prequal.totalAssets)
 				.invalid-feedback Test, delete later
 			
-			label.form-label.mb-3(for='requiredAssets') Required assets
+			label.form-label.mb-3(for='required-assets') Required assets
 			p#required-assets
-			input#required-assets-hidden(type='hidden' name='requiredAssets')
 
 			.h2 Credit
 			label.form-label(for='creditScore') Your credit score
-			input#credit-score.form-control.imask-number.mb-3(type='text' name='creditScore' min='0' placeholder='Credit score' required)
+			input#credit-score.form-control.imask-number.mb-3(type='text' name='creditScore' min='0' placeholder='Credit score' required value=prequal.creditScore)
 			.invalid-feedback Must be between 300 and 850. 
 			
 			label.form-label.mb-3(for='min-credit-score') Minimum credit score
 			p 600
 
+			p#credit-approval
+
 			.h2 Pre-qualification
 			label.form-label.mb-3(for='prequal-status') Your prequalification status
 			p#prequal-check
 			p#prequal-details
-			input#dti-qualified(type='hidden' name='dtiQualified')
-			input#credit-qualified(type='hidden' name='creditQualified')
-			input#asset-qualified(type='hidden' name='assetQualified')
-			input#prequalified(type='hidden' name='prequalified')
 
 			// action buttons
 			.mb-5
-			input.btn.btn-secondary(type='button' name='cancel' value='Reset' onClick="window.location.href='/';")
+			input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
 			button.btn.btn-primary.mx-3(type='submit') Save

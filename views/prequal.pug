@@ -1,0 +1,85 @@
+extends layout
+
+block content
+	main.mb-5
+		.mx-auto.my-4(style='max-width: 45rem;')
+			.my-3.mx-3
+				h6.text-muted.fs-6.fw-normal.text-center Started on #{prequal.getShortDate()}
+				h1.fw-bold.text-center= prequal.id
+				.pt-4(style='font-size: 1.2rem;')
+
+					.h2 Loan
+					.row
+						.col-3 
+							label.form-label(for='purchasePrice') Purchase price
+							.prequal-value $#{prequal.purchasePrice}
+						.col-3.gx-0
+							label.form-label(for='downPayment') Down payment
+							.prequal-value $#{prequal.downPayment}
+						.col-1.gx-0
+							label.form-label(for='dpPercent') %
+							.prequal-value #{prequal.dpPercent}%
+
+					label.form-label(for='loanAmount') Loan amount
+					.prequal-value $#{prequal.loanAmount}
+					.mb-5
+
+					.h2 Debt-to-income (DTI)
+					.h4 Income
+					label.form-label(for='monthlyIncome') Monthly income
+					.prequal-value $#{prequal.monthlyIncome}
+					.h4 Debt
+					label.form-label.mb-2(for='monthly-loan-payment') Monthly new home payment
+					.prequal-value $#{prequal.monthlyLoanPayment}
+
+					label.form-label(for='otherMonthlyDebt') Other monthly debt payments
+					.prequal-value $#{prequal.otherMonthlyDebt}
+
+					label.form-label.mb-3(for='totalMonthlyDebt') Total monthly debt payments
+					.prequal-value $#{prequal.totalMonthlyDebt}
+
+					.h4 DTI ratio
+					label.form-label.mb-3(for='dti') Your DTI
+					.prequal-value $#{prequal.dti}
+
+					label.form-label.mb-3(for='max-dti') Max DTI
+					.prequal-value 43%
+
+					.h2 Assets			
+					label.form-label(for='totalAssets') Total assets
+					.prequal-value $#{prequal.totalAssets}
+					
+					label.form-label.mb-3(for='required-assets') Required assets
+					.prequal-value $#{prequal.requiredAssets}
+
+					.h2 Credit
+					label.form-label(for='creditScore') Your credit score
+					.prequal-value #{prequal.creditScore}
+					
+					label.form-label.mb-3(for='min-credit-score') Minimum credit score
+					.prequal-value 600
+
+					p#credit-approval
+
+					.h2 Pre-qualification
+					label.form-label.mb-3(for='prequal-status') Your prequalification status
+					.prequal-value DTI qualified: #{prequal.dtiQualified}
+					.prequal-value Credit qualified: #{prequal.creditQualified}
+					.prequal-value Asset qualified: #{prequal.assetQualified}
+					.prequal-value.mt-3 Prequalfied: #{prequal.prequalified}
+
+			.text-center.mt-5
+				a.btn.btn-primary.mx-2(href=`/edit/${prequal.id}`) Edit prequal
+				button.btn.btn-danger.mx-2(type='button' data-bs-toggle='modal' data-bs-target='#deletePrequalModal') Delete prequal
+
+	#deletePrequalModal.modal.fade(tabindex='-1' aria-labelledby='deletePrequalModal' aria-hidden='true')
+		.modal-dialog
+			.modal-content
+				.modal-header
+					h5#deletePrequalModal.modal-title Delete prequal
+					button.btn-close(type='button' data-bs-dismiss='modal' aria-label='Close')
+				.modal-body Are you sure you want to delete the prequal: "#{prequal.id}"?
+				.modal-footer
+					form(action=`/destroy/${prequal.id}`, method="post")
+						button.btn.btn-secondary(type='button' data-bs-dismiss='modal') Cancel
+						button.btn.btn-danger.mx-3(type='submit') Delete prequal

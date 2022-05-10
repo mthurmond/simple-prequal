@@ -32,6 +32,18 @@ const calculatedElement = {
 	requiredAssets: document.getElementById('required-assets')	
 }
 
+const hiddenInput = {
+	loanAmount: document.getElementById('loan-amount-hidden'),
+	monthlyLoanPayment: document.getElementById('monthly-loan-payment-hidden'),
+	totalMonthlyDebt: document.getElementById('total-monthly-debt-hidden'),
+	dti: document.getElementById('dti-hidden'),	
+	requiredAssets: document.getElementById('required-assets-hidden'),
+	dtiQualified: document.getElementById('dti-qualified'),
+	creditQualified: document.getElementById('credit-qualified'),
+	assetQualified: document.getElementById('asset-qualified'),
+	prequalified: document.getElementById('prequalified')
+}
+
 const prequalForm = document.getElementById('prequal');
 
 // ADD MASKS TO ELEMENTS --> 
@@ -114,10 +126,10 @@ function updateCalculatedVariables(event) {
 	dti = Math.round(((totalMonthlyDebt / inputValue.totalMonthlyIncome) * 100)); 
 	requiredAssets = Math.round(inputValue.dp + (inputValue.purchasePrice * 0.03));
 
-	updateElementValue(loanAmount, calculatedElement.loanAmount); 
-	updateElementValue(monthlyLoanPayment, calculatedElement.monthlyLoanPayment); 
-	updateElementValue(totalMonthlyDebt, calculatedElement.totalMonthlyDebt);
-	updateElementValue(requiredAssets, calculatedElement.requiredAssets); 
+	updateElementValue(loanAmount, calculatedElement.loanAmount, hiddenInput.loanAmount); 
+	updateElementValue(monthlyLoanPayment, calculatedElement.monthlyLoanPayment, hiddenInput.monthlyLoanPayment); 
+	updateElementValue(totalMonthlyDebt, calculatedElement.totalMonthlyDebt, hiddenInput.totalMonthlyDebt);
+	updateElementValue(requiredAssets, calculatedElement.requiredAssets, hiddenInput.requiredAssets); 
 
 	// write dp percent using custom rules
 	if (!inputValue.purchasePrice || !inputValue.dp || dpPercent > 100) { 
@@ -130,8 +142,10 @@ function updateCalculatedVariables(event) {
 	const formattedDti = `${dti.toString()}%`;
 	if (dti > 0) {
 		calculatedElement.dti.innerHTML = `${formattedDti}`;
+		hiddenInput.dti.value = formattedDti; 
 	} else {
 		calculatedElement.dti.innerHTML = '';
+		hiddenInput.dti.value = '';
 	}	
 };
 
@@ -141,13 +155,15 @@ function updateDownPayment() {
 	inputElement.dp.value = inputValue.dp.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
 }
 
-function updateElementValue(value, element) {
+function updateElementValue(value, element, hiddenElement) {
 	// reference: https://stackoverflow.com/questions/2254185/regular-expression-for-formatting-numbers-in-javascript
 	const formattedValue = value.toString().split( /(?=(?:\d{3})+(?:\.|$))/g ).join( "," );
 	if (value > 0) {
 		element.innerHTML = `$${formattedValue}`;
+		hiddenElement.value = formattedValue; 
 	} else {
 		element.innerHTML = '';
+		hiddenElement.value = ''; 
 	}
 }
 
@@ -192,13 +208,21 @@ function checkPrequalStatus(dti, requiredAssets) {
 	const creditQualified = (inputValue.creditScore >= minFico) ? true:false; 
 	const assetQualified = (inputValue.totalAssets >= requiredAssets) ? true:false; 
 
-	// const prequalStatus = 
 	let dtiMessage = (dtiQualified) ? 'DTI qualifies':'DTI is too high'; 
 	let creditMessage = (creditQualified) ? 'Credit qualifies':'Credit is too low';
 	let assetsMessage = (assetQualified) ? 'Assets qualify':'Assets are too low'; 
 
-	const prequalifiedDecision = (dtiQualified && creditQualified && assetQualified) ? 'Congratulations, you are pre-qualified!':'Unfotunately, you are not pre-qualified at this time.'; 
+	const prequalified = (dtiQualified && creditQualified && assetQualified) ? true:false; 
+	
+	let prequalMessage = (prequalified) ? 'Congratulations, you are pre-qualified!':'Unfortunately, you are not pre-qualified at this time.'; 
 
-	document.getElementById('prequal-check').innerHTML = prequalifiedDecision;
+	// give user real-time pre-qual feedback
+	document.getElementById('prequal-check').innerHTML = prequalMessage;
 	document.getElementById('prequal-details').innerHTML = `${dtiMessage}, ${creditMessage}, ${assetsMessage}.`;
+
+	// add pre-qual decisions to form inputs so it's sent to the db
+	hiddenInput.dtiQualified.value = dtiQualified;
+	hiddenInput.creditQualified.value = creditQualified;
+	hiddenInput.assetQualified.value = assetQualified;
+	hiddenInput.prequalified.value = prequalified;
 }

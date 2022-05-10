@@ -1,0 +1,14 @@
+.prequal-name-spacing {
+    letter-spacing: 0.1rem;
+}
+
+.prequal-pagination-button {
+    font-weight: 500;
+    background-color: #ffffff;
+    border-color: #383838;
+}
+
+div.prequal-value {
+    font-weight: bold;
+    margin-bottom: 1em;
+}
