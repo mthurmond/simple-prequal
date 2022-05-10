@@ -105,10 +105,16 @@ router.get('/logout', function(req, res, next) {
     return res.redirect('/'); 
 });  
 
-// GET /prequal
-router.get('/prequal', (req, res) => {
-    res.render('prequal', { title: "New prequal" }); 
+// GET /new
+router.get('/new', (req, res) => {
+    res.render('new', { title: "New prequal" }); 
 }); 
+
+// POST /new
+router.post('/new', async (req, res) => {
+    // const post = await Prequal.create(req.body); 
+    res.redirect(`/`);   
+});
 
 // GET /:slug
 router.get('/:slug', async (req, res, next) => {
