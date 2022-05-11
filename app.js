@@ -6,12 +6,6 @@ const app = express();
 
 let port = process.env.PORT || 3000;
 
-app.use(bodyParser.urlencoded({ extended: false })); 
-
-app.use('/static', express.static('public')); 
-
-app.set('view engine', 'pug'); 
-
 // route all production http requests to https
 // reference: https://jaketrent.com/post/https-redirect-node-heroku
 if(process.env.NODE_ENV === 'production') { 
@@ -23,6 +17,12 @@ if(process.env.NODE_ENV === 'production') {
         }
     });
 }
+
+app.use(bodyParser.urlencoded({ extended: false })); 
+
+app.use('/static', express.static('public')); 
+
+app.set('view engine', 'pug'); 
 
 // hook up db
 const { sequelize } = require('./db'); 
@@ -47,7 +47,7 @@ app.use(session({
 // creates db and table(s)
 // pass { alter: true } to push db updates like adding/editing columns, tables, etc. 
 // *Only* pass { force: true } to drop all tables and recreate db
-db.sequelize.sync({ force: true }); 
+db.sequelize.sync({ alter: true }); 
 
 app.use(function(req, res, next) {
     res.locals.loggedIn = req.session.userId; 

@@ -123,10 +123,10 @@ router.get('/edit/:id', async (req, res) => {
 }); 
 
 // POST /edit 
-router.post('/edit/:slug', loginCheck, async (req, res) => {
-    const post = await Post.findOne({where: {slug: req.params.slug}}); 
-    await post.update(req.body); 
-    res.redirect(`/${post.slug}`);   
+router.post('/edit/:id', async (req, res) => {
+    const prequal = await Prequal.findOne({where: {id: req.params.id}}); 
+    await prequal.update(req.body); 
+    res.redirect(`/${prequal.id}`);   
 });
 
 // POST /destroy

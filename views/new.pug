@@ -81,14 +81,17 @@ block content
 
 			.h2 Pre-qualification
 			label.form-label.mb-3(for='prequal-status') Your prequalification status
-			p#prequal-check
-			p#prequal-details
-			input#dti-qualified(type='hidden' name='dtiQualified')
-			input#credit-qualified(type='hidden' name='creditQualified')
-			input#asset-qualified(type='hidden' name='assetQualified')
-			input#prequalified(type='hidden' name='prequalified')
+			p#dti-qualified DTI qualified: 
+			p#credit-qualified Credit qualified: 
+			p#asset-qualified Asset qualified: 
+			p#prequalified.fw-bold Prequalified: 
+			
+			input#dti-qualified-hidden(type='hidden' name='dtiQualified')
+			input#credit-qualified-hidden(type='hidden' name='creditQualified')
+			input#asset-qualified-hidden(type='hidden' name='assetQualified')
+			input#prequalified-hidden(type='hidden' name='prequalified')
 
 			// action buttons
 			.mb-5
-			input.btn.btn-secondary(type='button' name='cancel' value='Reset' onClick="window.location.href='/';")
+			input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
 			button.btn.btn-primary.mx-3(type='submit') Save

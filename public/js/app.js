@@ -29,7 +29,11 @@ const calculatedElement = {
 	monthlyLoanPayment: document.getElementById('monthly-loan-payment'),
 	totalMonthlyDebt: document.getElementById('total-monthly-debt'),
 	dti: document.getElementById('dti'),	
-	requiredAssets: document.getElementById('required-assets')	
+	requiredAssets: document.getElementById('required-assets'), 
+	dtiQualified: document.getElementById('dti-qualified'),
+	creditQualified: document.getElementById('credit-qualified'),
+	assetQualified: document.getElementById('asset-qualified'),
+	prequalified: document.getElementById('prequalified') 	
 }
 
 const hiddenInput = {
@@ -38,10 +42,10 @@ const hiddenInput = {
 	totalMonthlyDebt: document.getElementById('total-monthly-debt-hidden'),
 	dti: document.getElementById('dti-hidden'),	
 	requiredAssets: document.getElementById('required-assets-hidden'),
-	dtiQualified: document.getElementById('dti-qualified'),
-	creditQualified: document.getElementById('credit-qualified'),
-	assetQualified: document.getElementById('asset-qualified'),
-	prequalified: document.getElementById('prequalified')
+	dtiQualified: document.getElementById('dti-qualified-hidden'),
+	creditQualified: document.getElementById('credit-qualified-hidden'),
+	assetQualified: document.getElementById('asset-qualified-hidden'),
+	prequalified: document.getElementById('prequalified-hidden')
 }
 
 const prequalForm = document.getElementById('prequal');
@@ -207,22 +211,16 @@ function checkPrequalStatus(dti, requiredAssets) {
 	const dtiQualified = (dti <= maxDti) ? true:false; 
 	const creditQualified = (inputValue.creditScore >= minFico) ? true:false; 
 	const assetQualified = (inputValue.totalAssets >= requiredAssets) ? true:false; 
+	const prequalified = (dtiQualified && creditQualified && assetQualified) ? true:false;
 
-	let dtiMessage = (dtiQualified) ? 'DTI qualifies':'DTI is too high'; 
-	let creditMessage = (creditQualified) ? 'Credit qualifies':'Credit is too low';
-	let assetsMessage = (assetQualified) ? 'Assets qualify':'Assets are too low'; 
-
-	const prequalified = (dtiQualified && creditQualified && assetQualified) ? true:false; 
-	
-	let prequalMessage = (prequalified) ? 'Congratulations, you are pre-qualified!':'Unfortunately, you are not pre-qualified at this time.'; 
-
-	// give user real-time pre-qual feedback
-	document.getElementById('prequal-check').innerHTML = prequalMessage;
-	document.getElementById('prequal-details').innerHTML = `${dtiMessage}, ${creditMessage}, ${assetsMessage}.`;
-
-	// add pre-qual decisions to form inputs so it's sent to the db
+	// add pre-qual decisions to form inputs so they're sent to the db
 	hiddenInput.dtiQualified.value = dtiQualified;
 	hiddenInput.creditQualified.value = creditQualified;
 	hiddenInput.assetQualified.value = assetQualified;
 	hiddenInput.prequalified.value = prequalified;
+	// give user real-time feedback
+	calculatedElement.dtiQualified.innerHTML = `DTI qualified: ${dtiQualified}`;
+	calculatedElement.creditQualified.innerHTML = `Credit qualified: ${creditQualified}`;
+	calculatedElement.assetQualified.innerHTML = `Asset qualified: ${assetQualified}`;
+	calculatedElement.prequalified.innerHTML = `Prequalified: ${prequalified}`;
 }
