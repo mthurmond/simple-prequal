@@ -116,6 +116,18 @@ router.post('/new', async (req, res) => {
     res.redirect(`/${prequal.id}`);   
 });
 
+// GET /new
+router.get('/new2', (req, res) => {
+    res.render('new2', { title: "New prequal" }); 
+}); 
+
+// POST /new
+router.post('/new2', async (req, res) => {
+    const prequal = await Prequal.create(req.body); 
+    console.log(req.body); 
+    res.redirect(`/${prequal.id}`);   
+});
+
 // GET /edit 
 router.get('/edit/:id', async (req, res) => {
     const prequal = await Prequal.findOne({where: {id: req.params.id}}); 

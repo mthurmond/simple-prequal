@@ -13,6 +13,9 @@ const maxPossibleFico = 850;
 const minFico = 600; 
 const maxDti = 43;
 
+// declare global variables used in fuctions
+let inputValue; 
+
 // CREATE POINTERS TO ELEMENTS
 const inputElement = {
 	purchasePrice: document.getElementById('purchase-price'),
@@ -85,9 +88,6 @@ const inputMask = {
 }
 
 // FUNCTIONS --> 
-
-// declare global variables used in fuctions
-let inputValue; 
 
 // update calculated elements and prequal status if input elements change
 prequalForm.addEventListener('focusout', function (event) {	
@@ -171,40 +171,36 @@ function updateElementValue(value, element, hiddenElement) {
 	}
 }
 
+const validClass = 'is-valid'
+const invalidClass = 'is-invalid'
+
 function checkValidation() {
-	removeValidationClasses(inputElement.purchasePrice, inputElement.dp, inputElement.creditScore); 
+	// pass this info in as an argument later
+	let inputs = [
+		{
+			element: inputElement.purchasePrice,
+			isValid:
+				(inputValue.purchasePrice >= minPurchasePrice &&
+				inputValue.purchasePrice <= maxPurchasePrice)
+		},
+		{
+			element: inputElement.dp,
+			isValid: 
+				(inputValue.dp >= (minDown * inputValue.purchasePrice) &&
+				loanAmount >= minLoan &&
+				inputValue.purchasePrice)
+		},
+		{
+			element: inputElement.creditScore,
+			isValid: (inputValue.creditScore >= minPossibleFico 
+					&& inputValue.creditScore <= maxPossibleFico)
+		},
+	]
 
-	// purchase price
-	if (inputValue.purchasePrice) {
-		if (inputValue.purchasePrice < minPurchasePrice || inputValue.purchasePrice > maxPurchasePrice) {
-			inputElement.purchasePrice.classList.add('is-invalid');
-		} else {
-			inputElement.purchasePrice.classList.add('is-valid');
-		}
-	}
-	// down payment
-	console.log(inputValue.purchasePrice, inputValue.dp, minDown, loanAmount, minLoan)
-	if (inputValue.purchasePrice && inputValue.dp) {
-		if (inputValue.dp < (minDown * inputValue.purchasePrice) || loanAmount < minLoan) {
-			inputElement.dp.classList.add('is-invalid');
-		} else {
-			inputElement.dp.classList.add('is-valid');
-		}
-	}
-	// credit score
-	if (inputValue.creditScore) {
-		if (inputValue.creditScore < minPossibleFico || inputValue.creditScore > maxPossibleFico) {
-			inputElement.creditScore.classList.add('is-invalid');
-		} else {
-			inputElement.creditScore.classList.add('is-valid');
-		}
-	}
-}
-
-function removeValidationClasses() {
-	for (let i = 0, j = arguments.length; i < j; i++) {
-		arguments[i].classList.remove('is-invalid', 'is-valid');
-	}
+	inputs.forEach((input) => {
+		input.element.classList.remove(validClass, invalidClass)
+		input.element.classList.add((input.isValid) ? validClass : invalidClass) 
+	})
 }
 
 function checkPrequalStatus(dti, requiredAssets) {

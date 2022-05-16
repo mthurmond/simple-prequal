@@ -1,0 +1,29 @@
+extends layout2
+
+block content
+	.container-md.pt-3.pb-5.mb-5(style='max-width: 45rem;')
+		form#prequal(action="/new", method="post")
+			.h2 Loan
+			.row
+				.col-6 
+					label.form-label(for='purchasePrice') Purchase price
+					.input-group
+						span.input-group-text $
+						input#purchase-price.form-control.imask-number(type='text' name='purchasePrice' placeholder='Purchase price' required)
+						.invalid-feedback Must be between $100,000 and $4,000,000.
+				.col-6.gx-0
+					label.form-label(for='downPayment') Down payment
+					.input-group
+						span.input-group-text $
+						input#down-payment.form-control.imask-down-payment(type='text' name='downPayment' placeholder='Down payment' required)
+						.invalid-feedback Must be at least 3% of your purchase price, and allow for a loan of $50,000 or more.
+
+			label.form-label.mt-2(for='loanAmount') Loan amount
+			p#loan-amount
+			input#loan-amount-hidden(type='hidden' name='loanAmount') 
+			.mb-5
+
+			// action buttons
+			.mb-5
+			input.btn.btn-secondary(type='button' name='cancel' value='Cancel' onClick="window.location.href='/';")
+			button.btn.btn-primary.mx-3(type='submit') Save
