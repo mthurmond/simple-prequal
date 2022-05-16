@@ -22,7 +22,7 @@ const loginCheck = function (req, res, next) {
     if (req.session && req.session.userId) {
         return next()
     } else {
-        let err = new Error('You must be logged in to perform this action.');
+        const err = new Error('You must be logged in to perform this action.');
         err.status = 401;
         return next(err);
     }
@@ -87,7 +87,7 @@ router.post('/login', rateLimiter, async (req, res, next) => {
             req.session.userId = user.id;
             res.redirect('/');
         } else {
-            let err = new Error('Passwords do not match');
+            const err = new Error('Passwords do not match');
             err.status = 401;
             next(err); 
         }
@@ -124,7 +124,6 @@ router.get('/new2', (req, res) => {
 // POST /new
 router.post('/new2', async (req, res) => {
     const prequal = await Prequal.create(req.body); 
-    console.log(req.body); 
     res.redirect(`/${prequal.id}`);   
 });
 
