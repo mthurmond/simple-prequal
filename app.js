@@ -76,5 +76,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-    console.log(`app is now running on port ${port}`); 
+    console.log(`Simple prequal is now running on port ${port}`.); 
 }); 
