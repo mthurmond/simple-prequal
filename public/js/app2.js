@@ -1,8 +1,8 @@
 // define constants
 const validClass = 'is-valid'
 const invalidClass = 'is-invalid'
-const minPurchasePrice = 100000
-const maxPurchasePrice = 4000000
+const minPurchasePrice = 100_000
+const maxPurchasePrice = 4_000_000
 const minLoan = 50_000
 const minDown = 0.03
 
