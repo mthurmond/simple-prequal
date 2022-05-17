@@ -12,3 +12,13 @@ div.prequal-value {
     font-weight: bold;
     margin-bottom: 1em;
 }
+
+input.disabled-input {
+    background-color: white !important;
+    border-color: white !important;
+    margin-left: 0px !important;
+}
+
+span.disabled-input {
+    border-radius: 0.25rem !important;
+}

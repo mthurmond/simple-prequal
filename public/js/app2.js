@@ -28,7 +28,7 @@ class PrequalValue {
     this.hiddenInputElement().value = String(n)
   }
   updateCalculatedValue(n) {
-    this.nonInputElement().innerHTML = String(n)
+    this.inputElement().value = String(n)
   }
   getCalculatedValue() {
     return parseInt(this.hiddenInputElement().value)

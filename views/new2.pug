@@ -18,9 +18,10 @@ block content
 						input#down-payment.form-control.imask-down-payment(type='text' name='downPayment' placeholder='Down payment' required)
 						.invalid-feedback Must be at least 3% of your purchase price, and allow for a loan of $50,000 or more.
 
-			label.form-label.mt-2(for='loanAmount') Loan amount
-			p#loan-amount
-			input#loan-amount-hidden(type='hidden' name='loanAmount') 
+			label.form-label(for='loanAmount') Loan amount
+			.input-group
+				span.input-group-text.disabled-input $
+				input#loan-amount.form-control.disabled-input(type='text' name='loanAmount' placeholder='0' disabled required)
 			.mb-5
 
 			// action buttons
