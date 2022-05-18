@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
     }
     Prequal2.init({
         purchasePrice: {
-            type: Sequelize.STRING,
+            type: Sequelize.DECIMAL(12, 0),
             allowNull: false,
             validate: {
                 notNull: {
@@ -22,7 +22,7 @@ module.exports = (sequelize) => {
             },
         },
         downPayment: {
-            type: Sequelize.STRING,
+            type: Sequelize.DECIMAL(12, 0),
             allowNull: false,
             validate: {
                 notNull: {
@@ -34,16 +34,16 @@ module.exports = (sequelize) => {
             },
         },
         loanAmount: {
-            type: Sequelize.STRING,
+            type: Sequelize.DECIMAL(12, 0),
             allowNull: true,
             validate: {},
         },
     }, {
         hooks: {
             beforeCreate: (prequal) => {
-                prequal.purchasePrice = prequal.purchasePrice.replace(/,/g, '')
-                prequal.downPayment = prequal.downPayment.replace(/,/g, '')
-                prequal.loanAmount = prequal.purchasePrice - prequal.downPayment
+                prequal.purchasePrice = parseInt(prequal.purchasePrice.replace(/,/g, ''))
+                prequal.downPayment = parseInt(prequal.downPayment.replace(/,/g, ''))
+                prequal.loanAmount = parseInt(prequal.purchasePrice - prequal.downPayment)
             }
         },
         sequelize
