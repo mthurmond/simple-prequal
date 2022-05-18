@@ -8,9 +8,9 @@ const minDown = 0.03
 class PrequalValue {
   constructor(elementId, mask, validation = 0, formula = 0) {
     this.element = document.getElementById(`${elementId}`),
-      this.mask = IMask(this.element, mask),
-      this.validation = validation,
-      this.formula = formula
+    this.mask = IMask(this.element, mask),
+    this.validation = validation,
+    this.formula = formula
   }
   getInputValue() {
     return parseInt(this.mask.unmaskedValue)

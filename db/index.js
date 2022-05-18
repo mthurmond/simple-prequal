@@ -25,5 +25,6 @@ const db = {
 db.models.Post = require('./models/post.js')(sequelize); 
 db.models.User = require('./models/user.js')(sequelize); 
 db.models.Prequal = require('./models/prequal.js')(sequelize); 
+db.models.Prequal2 = require('./models/prequal2.js')(sequelize); 
 
 module.exports = db;

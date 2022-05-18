@@ -47,7 +47,7 @@ app.use(session({
 // creates db and table(s)
 // pass { alter: true } to push db updates like adding/editing columns, tables, etc. 
 // *Only* pass { force: true } to drop all tables and recreate db
-db.sequelize.sync({ alter: true }); 
+db.sequelize.sync({ force: true }); 
 
 app.use(function(req, res, next) {
     res.locals.loggedIn = req.session.userId; 

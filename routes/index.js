@@ -9,6 +9,7 @@ const { Op } = Sequelize;  // load operations module
 const { Post } = db.models;
 const { User } = db.models;
 const { Prequal } = db.models;
+const { Prequal2 } = db.models;
 
 // use express-rate-limit package to limit registration and login requests 
 const rateLimiter = rateLimit({
@@ -116,16 +117,29 @@ router.post('/new', async (req, res) => {
     res.redirect(`/${prequal.id}`);   
 });
 
-// GET /new
+// GET /new2
 router.get('/new2', (req, res) => {
-    res.render('new2', { title: "New prequal" }); 
+    res.render('new2', { title: "New prequal2" }); 
 }); 
 
-// POST /new
+// POST /new2
 router.post('/new2', async (req, res) => {
-    const prequal = await Prequal.create(req.body); 
-    res.redirect(`/${prequal.id}`);   
+    const prequal = await Prequal2.create(req.body); 
+    res.redirect(`/2/${prequal.id}`);
 });
+
+// GET /2/:id
+router.get('/2/:id', async (req, res, next) => {
+    try {
+        const prequal = await Prequal2.findOne({where: {id: req.params.id}});
+        res.render('prequal2', { prequal, title: `Prequal2: ${prequal.id}` } );
+    } 
+    catch(err) {
+        err = new Error("This post could not be found.");
+        err.status = 404;
+        next(err); 
+    }
+}); 
 
 // GET /edit 
 router.get('/edit/:id', async (req, res) => {
