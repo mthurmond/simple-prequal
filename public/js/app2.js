@@ -6,20 +6,22 @@ const minLoan = 50_000
 const minDown = 0.03
 
 class PrequalValue {
-  constructor(elementId, mask, formula = 0) {
+  constructor(elementId, mask, validation = 0, formula = 0) {
     this.element = document.getElementById(`${elementId}`),
       this.mask = IMask(this.element, mask),
+      this.validation = validation,
       this.formula = formula
   }
   getInputValue() {
     return parseInt(this.mask.unmaskedValue)
   }
   updateInputValue() {
-    this.mask.value = String(this.formula())
+    const n = (this.formula() >= 0) ? this.formula() : 0
+    this.mask.value = String(n)
   }
-  checkValidation(isValid) {
+  checkValidation() {
     this.element.classList.remove(validClass, invalidClass)
-    this.element.classList.add((isValid) ? validClass : invalidClass)
+    this.element.classList.add((this.validation()) ? validClass : invalidClass)
   }
 }
 
@@ -35,28 +37,35 @@ const maskType = {
 
 const formula = {
   loanAmount: () => { 
-    return purchasePrice.getInputValue() - downPayment.getInputValue() 
+    return (purchasePrice.getInputValue() - downPayment.getInputValue())
   }
 }
 
-const purchasePrice = new PrequalValue('purchase-price', maskType.number)
-const downPayment = new PrequalValue('down-payment', maskType.number)
-const loanAmount = new PrequalValue('loan-amount', maskType.number, formula.loanAmount)
+const validation = {
+  purchasePrice: () => {
+    return (
+      purchasePrice.getInputValue() >= minPurchasePrice &&
+      purchasePrice.getInputValue() <= maxPurchasePrice
+    )  
+  },
+  downPayment: () => {
+    return (
+      downPayment.getInputValue() >= (minDown * purchasePrice.getInputValue()) &&
+      loanAmount.getInputValue() >= minLoan &&
+      purchasePrice.getInputValue() !== null
+    ) 
+  }
+} 
+
+const purchasePrice = new PrequalValue('purchase-price', maskType.number, validation.purchasePrice)
+const downPayment = new PrequalValue('down-payment', maskType.number, validation.downPayment)
+const loanAmount = new PrequalValue('loan-amount', maskType.number, 0, formula.loanAmount)
 
 // update values and validation based on user inputs
 const prequalForm = document.getElementById('prequal')
 prequalForm.addEventListener('focusout', function () {
   // update calculated variables
   loanAmount.updateInputValue()
-
-  purchasePrice.checkValidation(
-    purchasePrice.getInputValue() >= minPurchasePrice &&
-    purchasePrice.getInputValue() <= maxPurchasePrice
-  )
-
-  downPayment.checkValidation(
-    downPayment.getInputValue() >= (minDown * purchasePrice.getInputValue()) &&
-    loanAmount.getInputValue() >= minLoan &&
-    purchasePrice.getInputValue() !== null
-  )
+  purchasePrice.checkValidation()
+  downPayment.checkValidation()
 })
