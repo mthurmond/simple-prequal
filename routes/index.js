@@ -6,7 +6,6 @@ const rateLimit = require('express-rate-limit');
 const { Sequelize } = require('../db'); 
 const db = require('../db'); 
 const { Op } = Sequelize;  // load operations module
-const { Post } = db.models;
 const { User } = db.models;
 const { Prequal } = db.models;
 const { Prequal2 } = db.models;
@@ -135,7 +134,7 @@ router.get('/2/:id', async (req, res, next) => {
         res.render('prequal2', { prequal, title: `Prequal2: ${prequal.id}` } );
     } 
     catch(err) {
-        err = new Error("This post could not be found.");
+        err = new Error("This prequal could not be found.");
         err.status = 404;
         next(err); 
     }
@@ -168,7 +167,7 @@ router.get('/:id', async (req, res, next) => {
         res.render('prequal', { prequal, title: `Prequal: ${prequal.id}` } );
     } 
     catch(err) {
-        err = new Error("This post could not be found.");
+        err = new Error("This prequal could not be found.");
         err.status = 404;
         next(err); 
     }
